@@ -12,12 +12,21 @@ export const AuthProvider = ({ children }) => {
     const history = useHistory();
 
     useEffect(() => {
-        auth.onAuthStateChanged((user) => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            console.log("Auth State Changed:", user); // Debugging line
             setUser(user);
             setLoading(false);
-            history.push('/Chats')
-        })
-    }, [user, history] );
+            if (user) {
+                console.log("User is authenticated, redirecting to /chats");
+                history.push('/chats');
+            } else {
+                console.log("User is not authenticated, redirecting to /");
+                history.push('/');
+            }
+        });
+
+        return () => unsubscribe();
+    }, [history]);
 
     const value = { user };
 

@@ -10,6 +10,7 @@ const Chats = () => {
     const history = useHistory();
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
+
     const handleLogout = async () => {
         await auth.signOut();
         history.push("/");
@@ -22,10 +23,15 @@ const Chats = () => {
     }
 
     useEffect(() => {
+        console.log("Chats component mounted");
         if (!user) {
+            console.log("No user found, redirecting to /");
             history.push("/");
             return;
         }
+
+        console.log("User found:", user);
+
         axios.get("https://api.chatengine.io/users/me", {
             headers: {
                 "project-id": process.env.REACT_APP_CHAT_ENGINE_ID,
@@ -34,12 +40,24 @@ const Chats = () => {
             }
         })
         .then(() => {
+            console.log("User authenticated with ChatEngine");
             setLoading(false);
         })
-        .catch(() => {
+        .catch((error) => {
+            console.error("Error fetching user from ChatEngine:", error);
+            if (error.response) {
+                console.error("Response data:", error.response.data);
+                console.error("Response status:", error.response.status);
+                console.error("Response headers:", error.response.headers);
+            } else if (error.request) {
+                console.error("Request data:", error.request);
+            } else {
+                console.error("Error message:", error.message);
+            }
+
             let formdata = new FormData();
-            formdata.append('email', user.email)
-            formdata.append('username', user.email)
+            formdata.append('email', user.email);
+            formdata.append('username', user.email);
             formdata.append('secret', user.uid);
 
             getFile(user.photoURL).then((avatar) => {
@@ -49,16 +67,27 @@ const Chats = () => {
                     formdata,
                     { headers: { "Private-Key": process.env.REACT_APP_CHAT_ENGINE_KEY } }
                 )
-                .then(() => setLoading(false))
-                .catch((error) => console.log(error));
+                .then(() => {
+                    console.log("New user created in ChatEngine");
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error("Error creating user in ChatEngine:", error);
+                    if (error.response) {
+                        console.error("Response data:", error.response.data);
+                        console.error("Response status:", error.response.status);
+                        console.error("Response headers:", error.response.headers);
+                    } else if (error.request) {
+                        console.error("Request data:", error.request);
+                    } else {
+                        console.error("Error message:", error.message);
+                    }
+                });
             });
-
-        })
+        });
     }, [user, history]);
 
-    if(!user || loading) return "Loading...";
-
-    
+    if (!user || loading) return "Loading...";
 
     return (
         <div className="chat-page">
