@@ -1,7 +1,6 @@
 import React, {useContext, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { auth } from '../Firebase';
-import { Children } from "react/cjs/react.production.min";
 
 const AuthContext = React.createContext();
 
@@ -16,9 +15,7 @@ export const AuthProvider = ({ children }) => {
         auth.onAuthStateChanged((user) => {
             setUser(user);
             setLoading(false);
-            if (user) {
-                history.push('/chats');
-            }
+            history.push('/Chats')
         })
     }, [user, history] );
 
