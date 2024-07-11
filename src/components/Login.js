@@ -2,7 +2,7 @@ import React from 'react'
 import { GoogleOutlined, FacebookOutlined } from '@ant-design/icons'
 import firebase from "firebase/app"; 
 
-import { auth } from '../Firebase'
+import { auth } from '../firebase'
 
 const Login = () => {
     return (
