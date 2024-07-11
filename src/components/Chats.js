@@ -18,7 +18,6 @@ const Chats = () => {
     const getFile = async (url) => {
         const response = await fetch(url);
         const data = await response.blob();
-
         return new File([data], "userPhoto.jpg", { type: "image/jpeg" });
     }
 
